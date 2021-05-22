@@ -20,14 +20,35 @@ class AlienInvasion:
 
     def run_game(self):
         while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
+            self._check_events()
+            self.ship.update()
+            self._update_screen()
 
-            self.screen.fill(self.settings.bg_color)
-            self.ship.blitme()
+    # utils
 
-            pygame.display.flip()
+    def _check_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:  # ~mouse click on window button [X]
+                sys.exit()
+
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RIGHT:  # if right arrow => key is pressed
+                    self.ship.moving_right = True
+                elif event.key == pygame.K_LEFT:
+                    self.ship.moving_left = True
+
+
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_RIGHT:  # if right arrow => key is not pressed
+                    self.ship.moving_right = False
+                elif event.key == pygame.K_LEFT:
+                    self.ship.moving_left = False
+
+    def _update_screen(self):
+        self.screen.fill(self.settings.bg_color)
+        self.ship.blitme()
+
+        pygame.display.flip()
 
 
 if __name__ == '__main__':
