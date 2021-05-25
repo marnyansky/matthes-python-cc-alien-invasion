@@ -2,6 +2,7 @@ import sys
 
 import pygame
 
+from bullet import Bullet
 from settings import Settings
 from ship import Ship
 
@@ -20,18 +21,20 @@ class AlienInvasion:
         pygame.display.set_caption("Alien Invasion")
 
         self.ship = Ship(self)
+        self.bullets = pygame.sprite.Group()
 
     def run_game(self):
         while True:
             self._check_events()
             self.ship.update()
+            self.bullets.update()
             self._update_screen()
 
     # utils
 
     def _check_events(self):
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:  # ~mouse click on window button [X]
+            if event.type == pygame.QUIT:  # ~mouse click on window button [X] or pressing Alt + F4
                 sys.exit()
 
             elif event.type == pygame.KEYDOWN:
@@ -39,12 +42,6 @@ class AlienInvasion:
 
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
-
-    def _update_screen(self):
-        self.screen.fill(self.settings.bg_color)
-        self.ship.blitme()
-
-        pygame.display.flip()
 
     def _check_keydown_events(self, event):
         """Handles pressing keys"""
@@ -54,6 +51,8 @@ class AlienInvasion:
             self.ship.moving_left = True
         elif event.key == pygame.K_ESCAPE:  # replacement of pygame.K_q
             sys.exit()
+        elif event.key == pygame.K_SPACE:
+            self._fire_bullet()
 
     def _check_keyup_events(self, event):
         """Handles releasing keys"""
@@ -61,6 +60,18 @@ class AlienInvasion:
             self.ship.moving_right = False
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = False
+
+    def _fire_bullet(self):
+        """Creating a new bullet (rocket) and including it in 'bullets' group"""
+        new_bullet = Bullet(self)
+        self.bullets.add(new_bullet)
+
+    def _update_screen(self):
+        self.screen.fill(self.settings.bg_color)
+        self.ship.blitme()
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()  # TODO problem! https://stackoverflow.com/questions/58480212/attributeerror-python-crash-course
+        pygame.display.flip()
 
 
 if __name__ == '__main__':
