@@ -1,6 +1,7 @@
 import sys
 
 import pygame
+from pygame.sprite import Group
 
 from bullet import Bullet
 from settings import Settings
@@ -21,13 +22,14 @@ class AlienInvasion:
         pygame.display.set_caption("Alien Invasion")
 
         self.ship = Ship(self)
-        self.bullets = pygame.sprite.Group()
+        self.bullets = Group()
 
     def run_game(self):
         while True:
             self._check_events()
             self.ship.update()
             self.bullets.update()
+            self._update_bullets()
             self._update_screen()
 
     # utils
@@ -63,14 +65,26 @@ class AlienInvasion:
 
     def _fire_bullet(self):
         """Creating a new bullet (rocket) and including it in 'bullets' group"""
-        new_bullet = Bullet(self)
-        self.bullets.add(new_bullet)
+        if len(self.bullets) < self.settings.bullets_allowed:
+            new_bullet = Bullet(self)
+            self.bullets.add(new_bullet)
+
+    def _update_bullets(self):
+        """Update bullet positions and remove fired bullets"""
+        # Update bullet positions
+        self.bullets.update()
+
+        # Remove bullets reached coord y=0 (top border of the game screen
+        for bullet in self.bullets.copy():
+            if bullet.rect.bottom <= 0:
+                self.bullets.remove(bullet)
+        # print(len(self.bullets)) # manual check of amount of bullets
 
     def _update_screen(self):
         self.screen.fill(self.settings.bg_color)
         self.ship.blitme()
-        for bullet in self.bullets.sprites():
-            bullet.draw_bullet()  # TODO problem! https://stackoverflow.com/questions/58480212/attributeerror-python-crash-course
+        # for bullet in bullets.sprites(): # TODO fix
+        #     bullet.draw_bullet()
         pygame.display.flip()
 
 
