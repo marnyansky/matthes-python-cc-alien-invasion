@@ -21,8 +21,8 @@ class Bullet(Sprite):
         self.y = float(self.rect.y)
 
         # create Surface /// # TODO remove костыль
-        # self.image = pygame.Surface(self.rect.size)
-        # self.image.fill(self.color)
+        self.image = pygame.Surface(self.rect.size)
+        self.image.fill(self.color)
 
     def update(self):
         """Move bullet (rocket) up: 'firing' a shot"""

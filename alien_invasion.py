@@ -32,6 +32,7 @@ class AlienInvasion:
             self._check_events()
             self.ship.update()
             self.bullets.update()
+            self._update_aliens()
             self._update_bullets()
             self._update_screen()
 
@@ -85,6 +86,19 @@ class AlienInvasion:
             for alien_number in range(number_aliens_x):
                 self._create_alien(alien_number, row_number)
 
+    # def _check_fleet_edges(ai, aliens): # source: https://russianblogs.com/article/3668440404/
+    #     """Responds to event 'alien is reached screen limit' """
+    #     for alien in aliens.sprites():
+    #         if alien.check_edges(): # TODO fix
+    #             _change_fleet_direction(ai, aliens)
+    #             break
+
+    def _change_fleet_direction(self):
+        """Moves down the whole fleet and changes its move direction"""
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.fleet_drop_speed
+        self.settings.fleet_direction *= -1
+
     def _create_alien(self, alien_number, row_number):  # alien_number = alien_id
         # Create an alien and place him in a row
         alien = Alien(self)
@@ -100,6 +114,12 @@ class AlienInvasion:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
 
+    def _update_aliens(self):
+        """Checks if fleet is reached screen limit,
+            with further updating positions of all aliens of the invasion fleet"""
+        # self._check_fleet_edges() # TODO fix method first
+        self.aliens.update()
+
     def _update_bullets(self):
         """Update bullet positions and remove fired bullets"""
         # Update bullet positions
@@ -114,8 +134,8 @@ class AlienInvasion:
     def _update_screen(self):
         self.screen.fill(self.settings.bg_color)
         self.ship.blitme()
-        # for bullet in bullets.sprites(): # TODO fix
-        #     bullet.draw_bullet()
+        # for bullet in self.bullets.sprites(): # TODO fix
+        #     bullet.draw_bullet(bullet.image)
         self.aliens.draw(self.screen)
 
         pygame.display.flip()
